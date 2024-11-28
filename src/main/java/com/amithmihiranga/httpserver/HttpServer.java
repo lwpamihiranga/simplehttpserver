@@ -1,54 +1,17 @@
 package com.amithmihiranga.httpserver;
 
+import com.amithmihiranga.httpserver.core.ServerListenerThread;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * Driver class for HTTP Server
  */
 public class HttpServer {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Server starting...");
 
-        try {
-            ServerSocket serverSocket = new ServerSocket(8080);
-
-            while(serverSocket.isBound() && !serverSocket.isClosed()) {
-                System.out.println("Waiting for the request");
-                Socket socket = serverSocket.accept();
-
-                InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();
-
-                String html = "<html><p>Hello, world!</p></html>";
-
-                final String CRLF = "\n\r";
-                String response =
-                        "HTTP/1.1 200 OK" + CRLF +
-                                "Content-Length: " + html.getBytes().length + CRLF +
-                                CRLF +
-                                html +
-                                CRLF;
-
-                System.out.println("Writing the msg to output stream");
-                outputStream.write(response.getBytes());
-
-                inputStream.close();
-                outputStream.close();
-                socket.close();
-
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            // serverSocket.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ServerListenerThread serverListenerThread = new ServerListenerThread(8080);
+        serverListenerThread.start();
     }
 }
