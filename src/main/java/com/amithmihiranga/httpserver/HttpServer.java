@@ -7,9 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- *
  * Driver class for HTTP Server
- *
  */
 public class HttpServer {
     public static void main(String[] args) {
@@ -17,27 +15,38 @@ public class HttpServer {
 
         try {
             ServerSocket serverSocket = new ServerSocket(8080);
-            Socket socket = serverSocket.accept();
 
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
+            while(serverSocket.isBound() && !serverSocket.isClosed()) {
+                System.out.println("Waiting for the request");
+                Socket socket = serverSocket.accept();
 
-            String html = "<html><p>Hello, world!</p></html>";
+                InputStream inputStream = socket.getInputStream();
+                OutputStream outputStream = socket.getOutputStream();
 
-            final String CRLF = "\n\r";
-            String response =
-                    "HTTP/1.1 200 OK" + CRLF +
-                    "Content-Length: " + html.getBytes().length + CRLF +
-                    CRLF +
-                    html +
-                    CRLF;
+                String html = "<html><p>Hello, world!</p></html>";
 
-            outputStream.write(response.getBytes());
+                final String CRLF = "\n\r";
+                String response =
+                        "HTTP/1.1 200 OK" + CRLF +
+                                "Content-Length: " + html.getBytes().length + CRLF +
+                                CRLF +
+                                html +
+                                CRLF;
 
-            inputStream.close();
-            outputStream.close();
-            socket.close();
-            serverSocket.close();
+                System.out.println("Writing the msg to output stream");
+                outputStream.write(response.getBytes());
+
+                inputStream.close();
+                outputStream.close();
+                socket.close();
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            // serverSocket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
