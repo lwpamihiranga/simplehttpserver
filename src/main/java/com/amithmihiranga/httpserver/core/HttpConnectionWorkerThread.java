@@ -14,9 +14,12 @@ public class HttpConnectionWorkerThread extends Thread {
 
     @Override
     public void run() {
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+
         try {
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
+            inputStream = socket.getInputStream();
+            outputStream = socket.getOutputStream();
 
             String html = "<html><p>Hello, world!</p></html>";
 
@@ -41,6 +44,21 @@ public class HttpConnectionWorkerThread extends Thread {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException e) {
+            }
         }
     }
 }
