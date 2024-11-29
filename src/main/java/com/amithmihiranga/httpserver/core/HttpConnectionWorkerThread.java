@@ -1,11 +1,16 @@
 package com.amithmihiranga.httpserver.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
 public class HttpConnectionWorkerThread extends Thread {
+    private final static Logger LOGGER = LoggerFactory.getLogger(HttpConnectionWorkerThread.class);
+
     private Socket socket;
 
     public HttpConnectionWorkerThread(Socket socket) {
@@ -31,7 +36,7 @@ public class HttpConnectionWorkerThread extends Thread {
                             html +
                             CRLF;
 
-            System.out.println("Writing the msg to output stream");
+            LOGGER.info("Writing the HTML response to output stream");
             outputStream.write(response.getBytes());
 
             inputStream.close();
@@ -45,6 +50,7 @@ public class HttpConnectionWorkerThread extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
+            LOGGER.info("Closing the resources");
             try {
                 if (inputStream != null) {
                     inputStream.close();
